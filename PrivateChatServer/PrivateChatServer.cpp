@@ -305,7 +305,7 @@ std::string& trimHE(std::string& s)
 std::list<char*> OnlineList;
 UINT_PTR timerid = 0;
 mutex m;
-void CheckOnline(
+void CALLBACK CheckOnline(
     HWND unnamedParam1,
     UINT unnamedParam2,
     UINT_PTR unnamedParam3,
@@ -351,7 +351,7 @@ int main()
     cout << "Initalize Winsock2...\n";
     BOOL ifShowIP = FALSE,ifShowTime=FALSE,ifUseSecure=FALSE,ifAllowMulti=FALSE,ifUseToken=FALSE, ifDenyCapture=FALSE;
     cout << "Do you want to show Client IP?Input \"1\" and Enter to do that.\n";
-    int a,b,d,e,f,g;
+    int a,b,d,e,f,g,h;
     string c;
     cin >> a;
     if (a == 1) ifShowIP = TRUE;

@@ -36,3 +36,11 @@
 /PrivateChatServer/x64/Debug
 /PrivateChatClient/x64/Debug
 /.vs/PrivateChat/v17
+/PrivateChatClient/Release/PrivateC.AD055C4C.tlog
+/PrivateChatClient/Release
+/PrivateChatClient/x64/Release
+/PrivateChatServer/Release
+/PrivateChatServer/x64/Release
+/Release
+/x64/Release
+*.sqlite
