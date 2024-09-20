@@ -12,3 +12,4 @@ This version is the original version,it includes the following main features:
  - Server token Requirment
  - Windows Socket Security Extension
  - Port customsize
+ - Automanicly Scroll

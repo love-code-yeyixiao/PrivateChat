@@ -422,6 +422,10 @@ void CPrivateChatClientDlg::OnBnClickedConnect()
             m_MessageList.InsertString(index,A2W(var.data()));
             index++;
         }
+        int count = 0;
+        count = m_MessageList.GetCount();
+
+        m_MessageList.SetCurSel(count - 1);
         GetDlgItem(IDC_REFRESH)->EnableWindow();
         GetDlgItem(IDOK)->EnableWindow();
         SetTimer(1003, 2000, NULL);
@@ -529,6 +533,10 @@ void CPrivateChatClientDlg::OnBnClickedRefresh()
             m_MessageList.InsertString(index, A2W(var.data()));
             index++;
         }
+        int count = 0;
+        count = m_MessageList.GetCount();
+
+        m_MessageList.SetCurSel(count - 1);
         GetDlgItem(IDC_REFRESH)->EnableWindow();
         GetDlgItem(IDOK)->EnableWindow();
     }
