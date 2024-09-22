@@ -1029,9 +1029,9 @@ void CPrivateChatClientDlg::OnBnClickedConnect()
                 BYTE* source = (BYTE*)malloc(MESSAGE_MAX_LENGTH), * des = (BYTE*)malloc(MESSAGE_MAX_LENGTH);
                 memset(des, 0, MESSAGE_MAX_LENGTH);
                 memset(source, 0, MESSAGE_MAX_LENGTH);
-                memcpy_s(source, MESSAGE_MAX_LENGTH, recvBuf, strlen(recvBuf));
+                memcpy_s(source, MESSAGE_MAX_LENGTH, recvBuf, sizeof(recvBuf));
                 DecryptText(source, des, token2);
-                memcpy_s(recvBuf, strlen(recvBuf), des, strlen(recvBuf));
+                memcpy_s(recvBuf, sizeof(recvBuf), des, sizeof(recvBuf));
                 free(source);
                 free(des);
             }
@@ -1125,7 +1125,7 @@ void CPrivateChatClientDlg::OnBnClickedOk()
         if (SecureTcpConnect(result->ai_addr, result->ai_addrlen, L"PrivateChat", NULL, 0, W2A(GetText.GetString()), recvBuf) == 0) {
             // MessageBox(L"连接成功");
             MESSAGE_MAX_LENGTH = sizeof(recvBuf) + 1008;
-            BYTE* source = (BYTE*)malloc(MESSAGE_MAX_LENGTH+10), * des = (BYTE*)malloc(MESSAGE_MAX_LENGTH+10);
+            BYTE* source = (BYTE*)malloc(MESSAGE_MAX_LENGTH), * des = (BYTE*)malloc(MESSAGE_MAX_LENGTH);
             if (_stricmp("", recvBuf) == 0) {
                 strcat_s(recvBuf, "PrivateChat0.0.3 New EE2E Conversation\nYour information won't show in the network level\n");
             }
@@ -1133,19 +1133,19 @@ void CPrivateChatClientDlg::OnBnClickedOk()
                 
                 memset(des, 0, MESSAGE_MAX_LENGTH);
                 memset(source, 0, MESSAGE_MAX_LENGTH);
-                memcpy_s(source, MESSAGE_MAX_LENGTH, recvBuf, strlen(recvBuf));
+                memcpy_s(source, MESSAGE_MAX_LENGTH, recvBuf, sizeof(recvBuf));
                 DecryptText(source, des, token);
-                memcpy_s(recvBuf, strlen(recvBuf), des, strlen(recvBuf));
+                memcpy_s(recvBuf, sizeof(recvBuf), des, sizeof(recvBuf));
             }
 
             CStringA message;
             message.Format("%s%s:%s\n", recvBuf, W2A(username.GetString()), MessageText);
-            memset(des, 0, MESSAGE_MAX_LENGTH+10);
-            memset(source, 0, MESSAGE_MAX_LENGTH+10);
+            memset(des, 0, MESSAGE_MAX_LENGTH);
+            memset(source, 0, MESSAGE_MAX_LENGTH);
             memcpy_s(source, MESSAGE_MAX_LENGTH+10, message.GetString(), strlen(message.GetString()));
             EncryptText(source, des, token);
-            char *sendBuf = (char*)malloc(MESSAGE_MAX_LENGTH+10);
-            memcpy_s(sendBuf, MESSAGE_MAX_LENGTH + 10, des, MESSAGE_MAX_LENGTH+10);
+            char *sendBuf = (char*)malloc(MESSAGE_MAX_LENGTH);
+            memcpy_s(sendBuf, MESSAGE_MAX_LENGTH, des, MESSAGE_MAX_LENGTH);
             free(source);
             free(des);
             SendText.Format("Account:%-11sMessageEE2E:%s", W2A(username.GetString()), sendBuf);
@@ -1210,9 +1210,9 @@ void CPrivateChatClientDlg::OnBnClickedRefresh()
                 BYTE* source = (BYTE*)malloc(MESSAGE_MAX_LENGTH), * des = (BYTE*)malloc(MESSAGE_MAX_LENGTH);
                 memset(des, 0, MESSAGE_MAX_LENGTH);
                 memset(source, 0, MESSAGE_MAX_LENGTH);
-                memcpy_s(source, MESSAGE_MAX_LENGTH, recvBuf, strlen(recvBuf));
+                memcpy_s(source, MESSAGE_MAX_LENGTH, recvBuf, sizeof(recvBuf));
                 DecryptText(source, des, token2);
-                memcpy_s(recvBuf, strlen(recvBuf), des, strlen(recvBuf));
+                memcpy_s(recvBuf, sizeof(recvBuf), des, sizeof(recvBuf));
                 free(source);
                 free(des);
             }
