@@ -30,7 +30,7 @@
 #include<mutex>
 
 #define RECV_DATA_BUF_SIZE 20000
-#define CURRENT_VERSION "0.0.2"
+#define CURRENT_VERSION "0.0.3"
 #define SSN_STR_LEN 12
 
 #pragma comment(lib,"Ws2_32.lib")
@@ -352,7 +352,7 @@ int main()
     BOOL ifShowIP = FALSE,ifShowTime=FALSE,ifUseSecure=FALSE,ifAllowMulti=FALSE,ifUseToken=FALSE, ifDenyCapture=FALSE,ifUseEE2E=FALSE;
     int a,b,d,e,f,g,h;
     string c;
-    cout << "Do you want to use EE2E to prevent your chat data secret from being viewed by Network Provider?Input \"1\" and Enter to do that.\n";
+    cout << "Do you want to use E2EE to prevent your chat data secret from being viewed by Network Provider?Input \"1\" and Enter to do that.\n";
     cin >> h;
     if (h == 1) ifUseEE2E = TRUE;
     if (h == 1) cout << "Note that the message texts will be processed by clients,so a false client could break it.\n";
@@ -379,6 +379,10 @@ int main()
     cout << "Do you want to force client to deny screenshot?Input \"1\" and Enter to do that.\n";
     cin >> g;
     if (g == 1) ifDenyCapture = TRUE;
+    int j = 0;
+    cout << "Do you want to hide configs above?Input \"1\" and Enter to do that.\n";
+    cin >> j;
+    if (j == 1) system("cls");
     cout << "Please input the opening port(zero means default port):";
     cin >> c;
     if (c != "0") PORT = c; else PORT = "27065";
@@ -388,7 +392,7 @@ int main()
     int iResult;
     string* Content=new string("");
     if (!ifUseEE2E) {
-        *Content="PrivateChat0.0.2 New Conversation\n";
+        *Content="PrivateChat0.0.3 New Conversation\n";
         Content->append((ifShowIP ? "The server will show your Ip in console.\n" : "The server won't show your Ip in console.\n"));
     }
     //ProtectData((void**) & Content);

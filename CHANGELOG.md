@@ -1,8 +1,17 @@
 # Changelog
 All noteworthy changes will be documented here.
+
+## 0.0.3
+### Added
+ - A feature to hide configs in server console
+
+### Changed
+ - Typo fixes EE2E->E2EE
+
+
 ## 0.0.2
 ### Added
- - The ability to use EE2E conversation
+ - The ability to use E2EE conversation
 
 ### Changed
  - Make Token Dialog passworded

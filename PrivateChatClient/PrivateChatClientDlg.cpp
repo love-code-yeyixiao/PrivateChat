@@ -930,7 +930,7 @@ void CPrivateChatClientDlg::OnBnClickedConnect()
     }
     char recvBuf[256000] = { 0 };
     if (SecureTcpConnect(result->ai_addr, result->ai_addrlen, L"PrivateChat", NULL, 0, "QueryVersion\0", recvBuf) == 0) {
-        if (_stricmp(recvBuf, "0.0.2") != 0) {
+        if (_stricmp(recvBuf, "0.0.3") != 0) {
             MessageBox(L"版本校验失败！服务端版本不匹配！");
             MessageBoxA(m_hWnd, recvBuf, "客户端版本:0.0.1", MB_OK);
             GetDlgItem(IDC_REFRESH)->EnableWindow(0);
@@ -1036,7 +1036,7 @@ void CPrivateChatClientDlg::OnBnClickedConnect()
                 free(des);
             }
             else {
-                strcat_s(recvBuf, "PrivateChat0.0.2 New EE2E Conversation\nYour information won't show in the network level\n");
+                strcat_s(recvBuf, "PrivateChat0.0.3 New EE2E Conversation\nYour information won't show in the network level\n");
             }
             
         }
@@ -1127,7 +1127,7 @@ void CPrivateChatClientDlg::OnBnClickedOk()
             MESSAGE_MAX_LENGTH = sizeof(recvBuf) + 1008;
             BYTE* source = (BYTE*)malloc(MESSAGE_MAX_LENGTH+10), * des = (BYTE*)malloc(MESSAGE_MAX_LENGTH+10);
             if (_stricmp("", recvBuf) == 0) {
-                strcat_s(recvBuf, "PrivateChat0.0.2 New EE2E Conversation\nYour information won't show in the network level\n");
+                strcat_s(recvBuf, "PrivateChat0.0.3 New EE2E Conversation\nYour information won't show in the network level\n");
             }
             else {
                 
@@ -1217,7 +1217,7 @@ void CPrivateChatClientDlg::OnBnClickedRefresh()
                 free(des);
             }
             else {
-                strcat_s(recvBuf, "PrivateChat0.0.2 New EE2E Conversation\nYour information won't show in the network level\n");
+                strcat_s(recvBuf, "PrivateChat0.0.3 New EE2E Conversation\nYour information won't show in the network level\n");
             }
         }
 

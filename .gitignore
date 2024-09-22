@@ -44,3 +44,4 @@
 /Release
 /x64/Release
 *.sqlite
+/.vs/ProjectSettings.json
