@@ -38,9 +38,17 @@
 #include <rpc.h>
 #include <ntdsapi.h>
 #include <afxsock.h>            // MFC 套接字扩展
+#include <wincrypt.h>
+#include <conio.h>
+
 
 //
 
+#define KEYLENGTH  0x00800000
+#define ENCRYPT_ALGORITHM CALG_RC4 
+#define ENCRYPT_BLOCK_SIZE 8 
+#define MY_ENCODING_TYPE  (PKCS_7_ASN_ENCODING | X509_ASN_ENCODING)
+#pragma warning(disable:4267)
 
 #define DEFAULT_PORT "27065"
 #define RECV_DATA_BUF_SIZE 20000
@@ -51,6 +59,8 @@
 // link with ntdsapi.lib for DsMakeSpn function
 #pragma comment(lib, "ntdsapi.lib")
 
+// link with the Advapi32.lib file.
+#pragma comment (lib, "advapi32")
 
 
 

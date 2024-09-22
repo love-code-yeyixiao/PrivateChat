@@ -1,5 +1,12 @@
 # Changelog
 All noteworthy changes will be documented here.
+## 0.0.2
+### Added
+ - The ability to use EE2E conversation
+
+### Changed
+ - Make Token Dialog passworded
+
 
 ## 0.0.1
 

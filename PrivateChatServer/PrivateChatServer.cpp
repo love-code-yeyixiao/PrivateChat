@@ -30,7 +30,7 @@
 #include<mutex>
 
 #define RECV_DATA_BUF_SIZE 20000
-#define CURRENT_VERSION "0.0.1"
+#define CURRENT_VERSION "0.0.2"
 #define SSN_STR_LEN 12
 
 #pragma comment(lib,"Ws2_32.lib")
@@ -349,10 +349,14 @@ int main()
 {
     std::cout << "Welcome to Private Chat Server "<< CURRENT_VERSION<<"!\n";
     cout << "Initalize Winsock2...\n";
-    BOOL ifShowIP = FALSE,ifShowTime=FALSE,ifUseSecure=FALSE,ifAllowMulti=FALSE,ifUseToken=FALSE, ifDenyCapture=FALSE;
-    cout << "Do you want to show Client IP?Input \"1\" and Enter to do that.\n";
+    BOOL ifShowIP = FALSE,ifShowTime=FALSE,ifUseSecure=FALSE,ifAllowMulti=FALSE,ifUseToken=FALSE, ifDenyCapture=FALSE,ifUseEE2E=FALSE;
     int a,b,d,e,f,g,h;
     string c;
+    cout << "Do you want to use EE2E to prevent your chat data secret from being viewed by Network Provider?Input \"1\" and Enter to do that.\n";
+    cin >> h;
+    if (h == 1) ifUseEE2E = TRUE;
+    if (h == 1) cout << "Note that the message texts will be processed by clients,so a false client could break it.\n";
+    cout << "Do you want to show Client IP?Input \"1\" and Enter to do that.\n";
     cin >> a;
     if (a == 1) ifShowIP = TRUE;
     cout << "Do you want to show request time?Input \"1\" and Enter to do that.\n";
@@ -382,8 +386,11 @@ int main()
     cout << (b ? "Show Time." : "Not to show time.") << "\n";
     WSADATA wsaData;
     int iResult;
-    string* Content = new string("PrivateChat0.0.1 New Conversation\n");
-    Content->append((ifShowIP?"The server will show your Ip in console.\n":"The server won't show your Ip in console.\n"));
+    string* Content=new string("");
+    if (!ifUseEE2E) {
+        *Content="PrivateChat0.0.2 New Conversation\n";
+        Content->append((ifShowIP ? "The server will show your Ip in console.\n" : "The server won't show your Ip in console.\n"));
+    }
     //ProtectData((void**) & Content);
     // Initialize Winsock
     std::map<char*, char*> UserIpMap;
@@ -496,7 +503,7 @@ int main()
         cout << "----------------------------------------\n";
         SOCKET ClientSocket;
         ClientSocket = INVALID_SOCKET;
-        if (Content->length() >= 256000) {
+        if (Content->length() >= 256000&&!ifUseEE2E) {
             //UnProtectData((void**)&Content);
             Content->clear();
             Content = new string("PrivateChat0.0.1 New Conversation\n");
@@ -504,9 +511,9 @@ int main()
             Content->append("Cleared Text because the text were too long.\n");
            // ProtectData((void**)&Content);
         }
-        else if(Content->length()>236000){
+        else if(Content->length()>236000&&!ifUseEE2E){
             //UnProtectData((void**)&Content);
-            Content->append("Tip:the text are too long,so please save information and then restart the server.\n");
+            Content->append("Tip:the texts are too long,so please save information and then restart the server.\n");
             //ProtectData((void**)&Content);
         }
         // Accept a client socket
@@ -541,11 +548,11 @@ int main()
                 setsockopt(ClientSocket, SOL_SOCKET, SO_SNDBUF, (const char*)&nSendBuf, sizeof(int));
                 printf("Bytes received: %d\n", aResult);
                 printf("Request Content: %s\n", recvbuf);
-                if (_strnicmp(recvbuf, "Account:", 8) == 0 && strlen(recvbuf) == 200) {
+                if (_strnicmp(recvbuf, "Account:", 8) == 0) {
                     string str = recvbuf;
                     string AccountName;
                     AccountName = str.substr(8, 11);
-                    if (_strnicmp(str.substr(19, 8).c_str(), "Message:", 8) == 0) {
+                    if (_strnicmp(str.substr(19, 8).c_str(), "Message:", 8) == 0 && strlen(recvbuf) == 200) {
                         auto it = UserIpMap.find(inet_ntoa(skaddr2.sin_addr));
                         if (!ifAllowMulti) {
                             if (it != UserIpMap.end() && strcmp(it->second, trimHE(AccountName).data()) != 0) {
@@ -557,13 +564,36 @@ int main()
                                 goto Invalid;
                             }
                         }
-                        string MessageText = str.substr(27);
-                        trim(AccountName);
-                        //UnProtectData((void**)&Content);
-                        Content->append(AccountName.data());
-                        Content->append(":");
-                        Content->append(trimHE(MessageText).data());
-                        Content->append("\n");
+                        if (!ifUseEE2E) {
+                            string MessageText = str.substr(27);
+                            trim(AccountName);
+                            //UnProtectData((void**)&Content);
+                            Content->append(AccountName.data());
+                            Content->append(":");
+                            Content->append(trimHE(MessageText).data());
+                            Content->append("\n");
+                        }
+                        else {
+                            cout << "Connect without EE2E!\n";
+                            goto Invalid;
+                        }
+                        //ProtectData((void**)&Content);
+                    }else if (_strnicmp(str.substr(19, 12).c_str(), "MessageEE2E:", 12) == 0) {
+                        auto it = UserIpMap.find(inet_ntoa(skaddr2.sin_addr));
+                        if (!ifAllowMulti) {
+                            if (it != UserIpMap.end() && strcmp(it->second, trimHE(AccountName).data()) != 0) {
+                                cout << "Login failed!Ip matches failed.\n";
+                                goto Invalid;
+                            }
+                            if (it == UserIpMap.end()) {
+                                cout << "Login failed!\n";
+                                goto Invalid;
+                            }
+                        }
+                        if (ifUseEE2E) {
+                            string MessageText = str.substr(31);
+                            *Content = MessageText;
+                        }
                         //ProtectData((void**)&Content);
                     }
                 }
@@ -689,14 +719,16 @@ int main()
                                 memcpy(tmpUsername, tmpchr, 30);
                                 UserIpMap.insert(pair<char*, char*>(inet_ntoa(skaddr2.sin_addr), tmpUsername));
                                 //UnProtectData((void**)&Content);
-                                Content->append("IP ");
-                                Content->append(inet_ntoa(skaddr2.sin_addr));
-                                Content->append(" tried logining as ");
-                                Content->append(tmpchr);
-                                Content->append("\n");
-                                if (ifDenyCapture) {
-                                    iSendResult += send(ClientSocket, "DenyCapture", sizeof("DenyCapture") + 1, 0);
+                                if (!ifUseEE2E) {
+                                    Content->append("IP ");
+                                    Content->append(inet_ntoa(skaddr2.sin_addr));
+                                    Content->append(" tried logining as ");
+                                    Content->append(tmpchr);
+                                    Content->append("\n");
+                                    if (ifDenyCapture) {
+                                        iSendResult += send(ClientSocket, "DenyCapture", sizeof("DenyCapture") + 1, 0);
 
+                                    }
                                 }
                             }
                         }
@@ -734,14 +766,16 @@ int main()
                                 memcpy(tmpUsername, tmpchr, 30);
                                 UserIpMap.insert(pair<char*, char*>(inet_ntoa(skaddr2.sin_addr), tmpUsername));
                                 //UnProtectData((void**)&Content);
-                                Content->append("IP ");
-                                Content->append(inet_ntoa(skaddr2.sin_addr));
-                                Content->append(" tried logining as ");
-                                Content->append(tmpchr);
-                                Content->append("\n");
-                                if (ifDenyCapture) {
-                                    iSendResult += send(ClientSocket, "DenyCapture", sizeof("DenyCapture") + 1, 0);
+                                if (!ifUseEE2E) {
+                                    Content->append("IP ");
+                                    Content->append(inet_ntoa(skaddr2.sin_addr));
+                                    Content->append(" tried logining as ");
+                                    Content->append(tmpchr);
+                                    Content->append("\n");
+                                    if (ifDenyCapture) {
+                                        iSendResult += send(ClientSocket, "DenyCapture", sizeof("DenyCapture") + 1, 0);
 
+                                    }
                                 }
                         }
                         //ProtectData((void**)&Content);
